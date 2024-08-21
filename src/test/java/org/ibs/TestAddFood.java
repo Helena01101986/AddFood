@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 
+import java.sql.*;
 import java.util.concurrent.TimeUnit;
 
 public class TestAddFood {
@@ -92,5 +93,54 @@ public class TestAddFood {
         driver.close();
 
     }
+
+    @Test
+    void testAddFood() throws SQLException {
+        Connection connection = DriverManager.getConnection("jdbc:h2:mem:testdb");
+        Statement statement = connection.createStatement();
+        statement.execute("CREATE TABLE food (id INT NOT NULL AUTO_INCREMENT, food_name VARCHAR(20), food_type VARCHAR(100), food_exotic NUMERIC(1))");
+
+        String insert = "INSERT INTO food(id, food_name, food_type, food_exotic) VALUES(?, ?, ?, ?)";
+        PreparedStatement preparedStatement = connection.prepareStatement(insert);
+        preparedStatement.setInt(1, 1);
+        preparedStatement.setString(2, "Картофель");
+        preparedStatement.setString(3, "VEGETABLE");
+        preparedStatement.setInt(4, 1);
+        preparedStatement.executeUpdate();
+
+        preparedStatement.setInt(1, 2);
+        preparedStatement.setString(2, "Салака");
+        preparedStatement.setString(3, "FRUIT");
+        preparedStatement.setInt(4, 0);
+        preparedStatement.executeUpdate();
+
+        ResultSet resultSetAll = statement.executeQuery("SELECT * FROM food");
+
+        while (resultSetAll.next()) {
+            int id = resultSetAll.getInt("id");
+            String food_name = resultSetAll.getString("food_name");
+            String food_type = resultSetAll.getString("food_type");
+            int food_exotic = resultSetAll.getInt("food_exotic");
+
+            System.out.printf("%d, %s, %s, %d%n", id, food_name, food_type, food_exotic);
+
+        }
+
+        ResultSet resultSet = statement.executeQuery("SELECT * FROM food WHERE food_name = 'Картофель'");
+
+        while (resultSet.next()) {
+            int id = resultSet.getInt("id");
+            String food_name = resultSet.getString("food_name");
+            String food_type = resultSet.getString("food_type");
+            int food_exotic = resultSet.getInt("food_exotic");
+
+            System.out.printf("%d, %s, %s, %d%n", id, food_name, food_type, food_exotic);
+
+        }
+
+    }
+
+
+
 }
 
