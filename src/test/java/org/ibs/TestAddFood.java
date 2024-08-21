@@ -137,6 +137,7 @@ public class TestAddFood {
             System.out.printf("%d, %s, %s, %d%n", id, food_name, food_type, food_exotic);
 
         }
+        connection.close();
 
     }
 
